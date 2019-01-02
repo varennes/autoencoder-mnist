@@ -1,9 +1,13 @@
 # Autoencoder Module file
 # includes class and functions common to AE
 
+import numpy as np
 import matplotlib.pyplot as plt
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D
 from keras.models import Model, Sequential, model_from_json
+
+
+# classes
 
 class AE_model:
     def __init__(self):
@@ -14,6 +18,12 @@ class AE_model:
                                        epochs=n_epoch, batch_size=n_batch,
                                        shuffle=True,
                                        validation_data=(x_validation, x_validation))
+
+    def train_noise(self, x_train, x_train_target, x_validation, x_validation_target, n_epoch, n_batch):
+        self.history = self.model.fit( x_train, x_train_target,
+                                       epochs=n_epoch, batch_size=n_batch,
+                                       shuffle=True,
+                                       validation_data=(x_validation, x_validation_target))
 
     def load_architecture(self, arch_file):
         with open( arch_file, 'r') as f:
@@ -52,3 +62,11 @@ class AE_model:
             subplot.axis('off')
         fig.suptitle('1st row: Original | 2nd row: Reconstruction', fontsize=16);
         fig.savefig( image_filename)
+
+
+# functions
+
+def add_noise_uni( x, factor):
+    x_noise = x + factor * np.random.normal(loc=0.0, scale=1.0, size=x.shape)
+    x_noise = np.clip( x_noise,  0., 1.)
+    return x_noise
